@@ -39,6 +39,7 @@ public class AuthenticationController {
         final UserDetails userDetails = userService.loadUserByUsername(userDto.getUsername());
         final String jwt = jwtUtil.generateToken(userDetails);
 
-        return ResponseEntity.ok(new AuthenticationResponse("Login successful", jwt));
+        System.out.println(jwt);
+        return ResponseEntity.ok(new AuthenticationResponse("Authoratized user", jwt));
     }
 }
