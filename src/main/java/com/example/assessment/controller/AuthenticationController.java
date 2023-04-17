@@ -28,18 +28,18 @@ public class AuthenticationController {
     private UserService userService;
 
     @PostMapping("/authenticate")
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody UserDto userDto) throws Exception {
+    public ResponseEntity<?> createAuthenticationToken(@RequestBody UserDto userDto){
 
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userDto.getUsername(), userDto.getPassword()));
         } catch (BadCredentialsException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new AuthenticationResponse("Login failed", "Incorrect username or password"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new AuthenticationResponse(
+                    "Login failed", "Authentication issue"));
         }
 
         final UserDetails userDetails = userService.loadUserByUsername(userDto.getUsername());
         final String jwt = jwtUtil.generateToken(userDetails);
 
-        System.out.println(jwt);
         return ResponseEntity.ok(new AuthenticationResponse("Authoratized user", jwt));
     }
 }

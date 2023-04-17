@@ -3,7 +3,7 @@ package com.example.assessment.service;
 import com.example.assessment.dto.UserDto;
 import com.example.assessment.entity.User;
 import com.example.assessment.repository.UserRepository;
-import com.example.assessment.security.JwtUtil;
+import com.example.assessment.security.PasswordEncoderConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -11,11 +11,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.Collections;
-
-import static com.example.assessment.util.PasswordHashing.hashPassword;
-import static com.example.assessment.util.PasswordHashing.verifyPassword;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -24,11 +20,11 @@ public class UserService implements UserDetailsService {
     private UserRepository userRepository;
 
     @Autowired
-    private JwtUtil jwtUtil;
+    private PasswordEncoderConfig passwordEncoderConfig;
 
     public void createAccount(UserDto userDto) throws NoSuchAlgorithmException {
         User user = new User();
-        String hashedPassword = hashPassword(userDto.getPassword());
+        String hashedPassword = passwordEncoderConfig.passwordEncoder().encode(userDto.getPassword());
         user.setPassword(hashedPassword);
         user.setUsername(userDto.getUsername());
         userRepository.save(user);
@@ -38,9 +34,9 @@ public class UserService implements UserDetailsService {
         String username = userDto.getUsername();
         String password = userDto.getPassword();
         User user = userRepository.findByUsername(username);
-        String hashedPassword = hashPassword(password);
+        String hashedPassword = passwordEncoderConfig.passwordEncoder().encode(password);
 
-        if (user != null && verifyPassword(userDto.getPassword(), hashedPassword)) {
+        if (user != null && passwordEncoderConfig.passwordEncoder().matches(userDto.getPassword(), hashedPassword)) {
         } else {
             throw new Exception("Invalid username or password");
         }

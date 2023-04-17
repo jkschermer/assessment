@@ -1,19 +1,26 @@
 package com.example.assessment.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+import lombok.Data;
 
 @Entity
+@Data
+@Table(name = "Category")
 public class Category {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @JsonIgnore
+    private int id;
 
-    private String name;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type", unique = true, nullable = false)
+    private CategoryType type;
 
+    @Column(name = "available_content", nullable = false)
     private int availableContent;
 
+    @Column(name = "price", nullable = false)
     private double price;
 }
